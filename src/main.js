@@ -4,12 +4,15 @@ import Vue from 'vue';
 import App from './App';
 import router from './router';
 
+/* App sass */
+import './assets/style/app.scss';
+
 Vue.config.productionTip = false;
+
 
 /* eslint-disable no-new */
 new Vue({
   el: '#app',
   router,
-  template: '<App/>',
-  components: { App },
+  render: h => h(App),
 });
