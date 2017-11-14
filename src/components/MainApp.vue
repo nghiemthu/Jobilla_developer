@@ -1,9 +1,10 @@
 <template>
   <div>
+  <!-- Search bar -->
     <div class="search">
       <div class="container">
         <form class="search-form">
-          <input type="text" class="form-control input-visible" placeholder="Search job title" />
+          <input v-model="keyword" class="form-control input-visible" placeholder="Search by keyword" />
           <button type="button" class="btn btn-search" >Search</button>
         </form>  
       </div>
@@ -14,87 +15,57 @@
         <div class="col-md-4 filter">
           <h4>FILTERS</h4>
           <hr/>
+            
+          <!-- Filter By Location -->
           <div class="filter-box">
             <h5>Location</h5>
-            <input type="text" class="form-control input-visible" placeholder="Search location" />
+            <input v-model="location" class="form-control input-visible" placeholder="Search location" />
           </div>
+ 
+          <!-- Filter By Date -->
           <div class="filter-box">
             <h5>Sort by</h5>
-            <select class="form-control">
-              <option>Date</option>
-              <option>Distance</option>
+            <select class="form-control" v-model="sortDate">
+              <option>Date Newest</option>
+              <option>Date Oldest</option>
             </select>
           </div>
+          <!-- Filter By Working Time -->
           <div class="filter-box">
-            <h5>Availability</h5>
+            <h5>Working Time</h5>
             <div class="checkbox">
               <label>
-                <input type="checkbox" id="checkbox_1" class="filled-in"/>
+                <input type="checkbox" id="checkbox_1" class="filled-in" value="osapäivätyö" v-model="workingTime"/>
                 <span><i class="fa fa-check" aria-hidden="true"></i></span>
                 Part time
               </label>
               <label>
-                <input type="checkbox" id="checkbox_1" class="filled-in"/>
+                <input type="checkbox" id="checkbox_1" class="filled-in" value="kokoaikatyö" v-model="workingTime"/>
                 <span><i class="fa fa-check" aria-hidden="true"></i></span>
                 Full time
               </label>
             </div>
           </div>
         </div>
+
+        <!-- Result Section -->
         <div class="col-md-8 result">
           <h4>RESULTS</h4>
           <hr/>
           
-          <div class="result-item">
-            <div class="header">
-              <h3>Kokki, Day Shine, Joensuu</h3>
-              <div class="working-hour">Part time</div>
-            </div>
-            <div class="info">
-              <span class="company"><i class="fa fa-building-o" aria-hidden="true"></i> Day Shine</span>
-              <span class="location"><i class="fa fa-map-marker" aria-hidden="true"></i> Joensuu</span>
-            </div>
-            <p>
-              We are looing for permanent Finnish waiter/waitress ( English &Finnish speaking) working at the best Chinese restaurant Da Zhong Hua in Rovaniemi,pls send us your CV by mail to suurkiina@gmail.com if you are interested. We are also looking for Chinese cuisine chef.
-            </p>
-            <div class="btn-wrapper">
-              <div class="social">
-                <i class="fa fa-twitter" aria-hidden="true"></i>
-                <i class="fa fa-facebook" aria-hidden="true"></i>
-                <i class="fa fa-linkedin" aria-hidden="true"></i>
-              </div>
-              <button class="btn btn-apply ">Apply</button>
-            </div>
-            <hr>
-          </div>
-          
-          <div class="result-item">
-            <div class="header">
-              <h3>Ravintolan tarjoilija, 5 paikkaa, Suur-Kiina Ravintola Oy, Rovaniemi</h3>
-              <span class="working-hour">Part time</span>
-            </div>
-            <div class="info">
-              <span class="company"><i class="fa fa-building-o" aria-hidden="true"></i> Ravintolan tarjoilija</span>
-              <span class="location"><i class="fa fa-map-marker" aria-hidden="true"></i> Rovaniemi</span>
-            </div>
-            <p>
-              Haetaan autokuskia asiakkaillemme, pääasiassa kiinalaisille turisteille. Englannin kielen taito ehdoton, kiina plussaa. Tehtäviin kuuluu autolla kuljettaminen Lapin alueella asiakkaan mukaan. Kiertoajelut, revontulien metsästysajot yöllä , nähtävyydet, lentokenttä noudot ym. Työ aika osa-aikaista, kausittain saattaa olla runsaamminkin  ajoa. Vaihtelevat ajo ajat.  Odotamme sinulta joustavuutta,  hyvää ajokokemusta ja asiakaspalvelu henkisyyttä. Otathan yhteyttä mikäli uskot olevasi sopivan hommaan!\r\n\r\nLooking for a driver who's main area in this job  will be Lapland. Airport pick-ups, customer sihtseeing and Aurora hunting in the night possibly. Part time and changing working time. Depending on tourism situation, can be more driving some days. Be flexible, customer servant and have a good driving experience with english language skills and the job might be yours! Chinese language is plus!
-            </p>
-            <div class="btn-wrapper">
-              <div class="social">
-                <i class="fa fa-twitter" aria-hidden="true"></i>
-                <i class="fa fa-facebook" aria-hidden="true"></i>
-                <i class="fa fa-linkedin" aria-hidden="true"></i>
-              </div>
-              <button class="btn btn-apply ">Apply</button>
-            </div>
-            <hr>
-          </div>
-          
+          <result-item v-for="item in filterData().filter(sortDataByPage(pageNumber))" :job="item"></result-item>
+
+          <!-- Pages -->
           <div class="page">
-            <div class="previous button"><i class="fa fa-chevron-left" aria-hidden="true"></i></div>
-            <div class="number">1</div>
-            <div class="next button"><i class="fa fa-chevron-right" aria-hidden="true"></i></div>
+            <div  
+              class="previous button" 
+              v-if="pageNumber > 0"
+              v-on:click="decreasePageNumber()"><i class="fa fa-chevron-left" aria-hidden="true"></i></div>
+            <div class="number">{{ pageNumber + 1 }}</div>
+            <div 
+              class="next button" 
+              v-if="pageNumber < filterData().length / 10"
+              v-on:click="increasePageNumber()"><i class="fa fa-chevron-right" aria-hidden="true"></i></div>
           </div>
         </div>
       </div>
@@ -106,25 +77,71 @@
 <script>
 import Vue from 'vue';
 import VueResource from 'vue-resource';
+import ResultItem from './ResultItem';
 
 Vue.use(VueResource);
 
 export default {
   name: 'MainApp',
-
+  components: { ResultItem },
   data() {
-
+    return {
+      data: [],
+      err: 'err',
+      pageNumber: 0,
+      location: '',
+      keyword: '',
+      sortDate: 'Date Newest',
+      workingTime: [],
+    };
   },
+
+  mounted() {
+    this.getData();
+  },
+
   methods: {
     getData() {
       this.$http
         .get('https://paikat.te-palvelut.fi/tpt-api/tyopaikat?englanti=true')
         .then((response) => {
-          console.log(response.data.response.docs);
+          this.data = response.data.response.docs;
         })
         .catch((response) => {
-          console.log(response.data);
+          this.err = response.data;
         });
+    },
+    increasePageNumber() {
+      if (this.pageNumber < this.data.length / 10) this.pageNumber = this.pageNumber + 1;
+    },
+    decreasePageNumber() {
+      if (this.pageNumber > 0) this.pageNumber = this.pageNumber - 1;
+    },
+    sortDataByPage: pageNumber => (val, index) =>
+      pageNumber * 10 < index && index < (pageNumber + 1) * 10,
+
+    // Filter data by an array - working time
+    sortDataByWorkingTime: workingTime => val =>
+      workingTime.length === 0 ? true : workingTime.indexOf(val.tyoaika) >= 0,
+    sortDataByLocation: location => val =>
+      (val.kunta) ? val.kunta.includes(location) : false,
+    sortDataByKeyword: keyWord => val =>
+      (val.otsikko) ? val.otsikko.includes(keyWord) || val.kuvausteksti.includes(keyWord) : false,
+    sortDataByDate() {
+      if (this.data && this.sortDate === 'Date Newest') {
+        return (a, b) => new Date(b.ilmoituspaivamaara) - new Date(a.ilmoituspaivamaara);
+      }
+
+      return (a, b) => new Date(a.ilmoituspaivamaara) - new Date(b.ilmoituspaivamaara);
+    },
+    filterData() {
+      return this.data
+            ? this.data
+              .filter(this.sortDataByKeyword(this.keyword))
+              .filter(this.sortDataByLocation(this.location))
+              .sort(this.sortDataByDate())
+              .filter(this.sortDataByWorkingTime(this.workingTime))
+            : [];
     },
   },
 };

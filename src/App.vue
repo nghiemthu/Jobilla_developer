@@ -6,7 +6,7 @@
 </template>
 
 <script>
-import AppNav from './components/AppNav.vue';
+import AppNav from './components/AppNav';
 
 export default {
   name: 'app',

@@ -16,6 +16,14 @@ nav {
   }
 }
 
+.btn-login {
+  font-size: 14px;
+  &:hover {
+  	color: white;
+  	text-decoration: underline;
+  }
+}
+
 .navbar-brand img {
   width: 70px;
   color: red;
@@ -61,6 +69,13 @@ h5 {
       .header {
         display: flex;
         flex-wrap: wrap;
+      }
+      .date {
+      	font-size: 12px;
+      	color: #999;
+      	padding-bottom: 10px;
+      	width: 100%;
+      	text-align: right;
       }
       h3 {
         font-size: 18px;

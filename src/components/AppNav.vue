@@ -12,8 +12,12 @@
 <script>
 export default {
   name: 'AppNav',
-  data() {  
+  data() {
+		return {
+
+		};
   },
+
   methods: {
 
   },
