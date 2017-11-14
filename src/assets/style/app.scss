@@ -178,6 +178,11 @@ h5 {
   }
 }
 
+.more {
+  cursor: pointer;
+  color: $theme-color;
+}
+
 .page {
   display: flex;
   color: #999;
