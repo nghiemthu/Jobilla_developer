@@ -153,6 +153,31 @@ h5 {
   }
 }
 
+.loading {
+  margin: 40px auto;
+  width: 150px;
+  height: 5px;
+  border: 1px solid #ebeff2;
+  border-radius: 50px;
+  overflow: hidden;
+  .fill {
+    animation: slide 1.5s linear infinite;
+    background-color: $theme-color;;
+    width: 50%;
+    border-radius: 50px;
+    height: 100%;  
+  }
+}
+
+@keyframes slide{
+  0%{
+    margin-left: -50%;
+  }
+  100% {
+    margin-left: 100%;
+  }
+}
+
 .page {
   display: flex;
   color: #999;

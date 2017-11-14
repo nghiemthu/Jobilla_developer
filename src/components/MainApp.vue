@@ -52,6 +52,11 @@
         <div class="col-md-8 result">
           <h4>RESULTS</h4>
           <hr/>
+
+          <!-- Loading bar -->
+          <div class="loading" v-if="loadingData">
+            <div class="fill"></div>
+          </div>
           
           <result-item v-for="item in filterData().filter(sortDataByPage(pageNumber))" :job="item"></result-item>
 
@@ -87,6 +92,7 @@ export default {
   data() {
     return {
       data: [],
+      loadingData: true,
       err: 'err',
       pageNumber: 0,
       location: '',
@@ -105,6 +111,7 @@ export default {
       this.$http
         .get('https://paikat.te-palvelut.fi/tpt-api/tyopaikat?englanti=true')
         .then((response) => {
+          this.loadingData = false;
           this.data = response.data.response.docs;
         })
         .catch((response) => {

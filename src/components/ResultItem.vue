@@ -3,7 +3,10 @@
   	<div class="date">{{ job.ilmoituspaivamaara.slice(0,10) }}</div>
     <div class="header">
       <h3>{{ job.otsikko }}</h3>
-      <div class="working-hour">Part time</div>
+      <div class="working-hour">{{ 
+      	(job.tyoaika == 'kokoaikatyö') ? 'Full Time' 
+      	: (job.tyoaika == 'osapäivätyö') ? 'Part Time' : job.tyoaika
+      }}</div>
     </div>
     <div class="info">
       <span class="company"><i class="fa fa-building-o" aria-hidden="true"></i> {{ job.tyonantajanNimi }}</span>
